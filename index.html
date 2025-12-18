@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Emoji Codes</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; padding: 28px; background: #0b0d12; color: #e8ecf3; }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    h1 { margin: 0 0 16px; font-size: 22px; }
+    .hint { opacity: .8; margin: 0 0 18px; }
+    .card { background: #121624; border: 1px solid #232a3d; border-radius: 14px; padding: 16px; }
+    .row {
+      display: grid;
+      grid-template-columns: 56px 1fr 110px;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 8px;
+      border-radius: 12px;
+    }
+    .row + .row { border-top: 1px solid #232a3d; }
+    .emoji { font-size: 28px; text-align: center; }
+    .code {
+      display: flex; gap: 8px; align-items: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #2b3350;
+      background: #0e1322;
+      color: #e8ecf3;
+      outline: none;
+    }
+    input:focus { border-color: #5a74ff; }
+    button {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #2b3350;
+      background: #171d31;
+      color: #e8ecf3;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    button:hover { border-color: #5a74ff; }
+    .result {
+      text-align: right;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      min-height: 20px;
+    }
+    .ok { color: #79ffa8; }
+    .nope { color: #ff7a7a; font-weight: 600; opacity: .95; }
+    .small { font-size: 12px; opacity: .7; margin-top: 14px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Emoji Code Board</h1>
+    <p class="hint">Type the correct code for each emoji to reveal its number.</p>
+
+    <div class="card" id="board"></div>
+
+    <p class="small">Tip: codes are case-sensitive here (you can change that in the JS).</p>
+  </div>
+
+  <script>
+    // Emoji -> expected code -> revealed number
+    const items = [
+      { emoji: "📞", label: "Phone",  code: "mango",        value: "6531" },
+      { emoji: "⭐", label: "star",   code: "nerd",         value: "3"    },
+      { emoji: "🧪", label: "beaker", code: "1264c4life",   value: "1264" },
+      { emoji: "✋", label: "Hand",   code: "covidcheese",  value: "104"  },
+      { emoji: "✝️", label: "Cross",  code: "Caganer",      value: "2"    },
+    ];
+
+    const board = document.getElementById("board");
+
+    function makeRow(item, idx) {
+      const row = document.createElement("div");
+      row.className = "row";
+
+      const emoji = document.createElement("div");
+      emoji.className = "emoji";
+      emoji.title = item.label;
+      emoji.textContent = item.emoji;
+
+      const codeWrap = document.createElement("div");
+      codeWrap.className = "code";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "Enter code…";
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      input.setAttribute("aria-label", `${item.label} code input`);
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "Submit";
+
+      const result = document.createElement("div");
+      result.className = "result";
+      result.id = `result-${idx}`;
+
+      function check() {
+        const guess = input.value; // case-sensitive
+        if (guess === item.code) {
+          result.textContent = item.value;
+          result.classList.remove("nope");
+          result.classList.add("ok");
+        } else {
+          result.textContent = "✗";
+          result.classList.remove("ok");
+          result.classList.add("nope");
+        }
+      }
+
+      btn.addEventListener("click", check);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") check();
+      });
+
+      codeWrap.appendChild(input);
+      codeWrap.appendChild(btn);
+
+      row.appendChild(emoji);
+      row.appendChild(codeWrap);
+      row.appendChild(result);
+
+      return row;
+    }
+
+    items.forEach((item, idx) => board.appendChild(makeRow(item, idx)));
+  </script>
+</body>
+</html>
